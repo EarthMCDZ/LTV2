@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LTV — LARP Television</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Permanent+Marker&family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap" />
+<style>
+  :root {
+    --marigold: #F5A623;
+    --sky: #29ABE2;
+    --crimson: #D6262A;
+    --hotpink: #FF5FA8;
+    --cyan: #38D0E0;
+    --ink: #161311;
+    --cream: #FFF6E5;
+    --paper: #FFFDF8;
+    --muted: #6b665f;
+    --muted2: #8a8579;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+  }
+  button, input, select, textarea { font-family: inherit; }
+  a { color: inherit; }
+
+  /* ---------- header ---------- */
+  header.site-header {
+    background: var(--paper);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .logo { display: flex; align-items: flex-end; gap: 2px; line-height: 0.8; cursor: pointer; user-select: none; }
+  .logo .L {
+    font-family: 'Bungee', sans-serif;
+    color: var(--marigold);
+    -webkit-text-stroke: 2.5px var(--ink);
+    text-shadow: 5px 5px 0 var(--sky), 5px 5px 0 var(--ink);
+  }
+  .logo .TV {
+    font-family: 'Permanent Marker', cursive;
+    color: var(--crimson);
+    -webkit-text-stroke: 1.5px var(--ink);
+    transform: rotate(-3deg);
+    margin-left: -2px;
+  }
+  .logo.small .L { font-size: 34px; }
+  .logo.small .TV { font-size: 27px; margin-bottom: 4px; }
+  .logo.large .L { font-size: 81px; }
+  .logo.large .TV { font-size: 66px; margin-bottom: 9px; }
+
+  nav.main-nav { display: flex; gap: 6px; flex-wrap: wrap; }
+  .nav-btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.03em;
+    padding: 8px 14px;
+    border: 2.5px solid var(--ink);
+    border-radius: 6px;
+    background: var(--paper);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .nav-btn.active { background: var(--crimson); color: var(--cream); box-shadow: 2px 2px 0 var(--ink); }
+
+  .pattern-strip {
+    height: 10px;
+    background-image: repeating-linear-gradient(45deg, var(--cyan) 0px, var(--cyan) 10px, var(--hotpink) 10px, var(--hotpink) 20px);
+    border-top: 3px solid var(--ink);
+    border-bottom: 3px solid var(--ink);
+  }
+
+  .marquee-wrap {
+    background: var(--ink);
+    color: var(--cream);
+    overflow: hidden;
+    white-space: nowrap;
+    border-bottom: 4px solid var(--crimson);
+  }
+  .marquee-track {
+    display: inline-block;
+    padding-left: 100%;
+    animation: ltv-marquee 28s linear infinite;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+  @keyframes ltv-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  .admin-bar {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 8px 20px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ---------- layout ---------- */
+  main { max-width: 1100px; margin: 0 auto; padding: 40px 20px 80px; }
+
+  .section-heading { margin-bottom: 24px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .section-heading .heading-text h2 {
+    font-family: 'Bungee', sans-serif;
+    font-size: clamp(28px, 4vw, 40px);
+    margin: 0;
+    text-transform: uppercase;
+  }
+  .section-heading .heading-text p { font-size: 15px; color: var(--muted); margin-top: 6px; max-width: 560px; }
+  .section-heading .underline { height: 5px; width: 64px; background: var(--crimson); margin-top: 12px; border-radius: 2px; }
+
+  .badge {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--ink);
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    padding: 3px 8px;
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+
+  /* ---------- hero ---------- */
+  .hero {
+    background: var(--ink);
+    border-radius: 16px;
+    border: 4px solid var(--ink);
+    padding: 48px 32px;
+    margin-bottom: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(45deg, rgba(56,208,224,0.13) 0px, rgba(56,208,224,0.13) 12px, transparent 12px, transparent 24px);
+  }
+  .hero-content { position: relative; }
+  .hero p.tagline { color: var(--cream); font-size: clamp(15px, 2vw, 19px); max-width: 520px; margin-top: 18px; line-height: 1.6; }
+  .hero-actions { display: flex; gap: 12px; margin-top: 26px; flex-wrap: wrap; }
+  .btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .btn-primary { background: var(--crimson); color: var(--cream); border: 2.5px solid var(--cream); }
+  .btn-outline { background: transparent; color: var(--cream); border: 2.5px solid var(--cream); }
+
+  /* ---------- cards / grids ---------- */
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 20px; }
+  .card {
+    text-align: left;
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    border-radius: 10px;
+    padding: 16px;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 var(--ink);
+    transition: transform 0.12s ease;
+  }
+  .card:hover { transform: translate(-2px, -2px); }
+  .card .swatch {
+    width: 100%; height: 90px; border: 2.5px solid var(--ink); border-radius: 6px; margin-bottom: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Permanent Marker', cursive; font-size: 22px; color: var(--ink); text-align: center; padding: 8px;
+  }
+  .card h3 { margin: 0 0 4px; font-size: 18px; font-weight: 700; }
+  .card .faction { margin: 0 0 10px; font-size: 13px; color: var(--muted); }
+
+  /* ---------- featured artist ---------- */
+  .featured {
+    display: grid; grid-template-columns: minmax(180px, 260px) 1fr; gap: 24px;
+    background: var(--paper); border: 3px solid var(--ink); border-radius: 12px;
+    box-shadow: 5px 5px 0 var(--ink); padding: 24px; margin-bottom: 56px;
+  }
+  .featured .swatch-lg {
+    border: 2.5px solid var(--ink); border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    font-family: 'Permanent Marker', cursive; font-size: 26px; text-align: center; padding: 16px; min-height: 160px;
+  }
+  .featured h3 { font-family: 'Bungee', sans-serif; font-size: 26px; margin: 12px 0 6px; }
+  .featured p.bio { font-size: 14.5px; color: var(--muted); margin: 0 0 16px; line-height: 1.6; }
+  @media (max-width: 560px) { .featured { grid-template-columns: 1fr; } }
+
+  /* ---------- modal ---------- */
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(22,19,17,0.75);
+    display: flex; align-items: center; justify-content: center; z-index: 50; padding: 20px;
+  }
+  .modal-box {
+    background: var(--paper); border: 4px solid var(--ink); border-radius: 12px;
+    max-width: 460px; width: 100%; box-shadow: 8px 8px 0 var(--crimson);
+    max-height: 85vh; overflow-y: auto;
+  }
+  .modal-header { border-bottom: 4px solid var(--ink); padding: 20px 24px; display: flex; justify-content: space-between; align-items: flex-start; }
+  .modal-header p.persona { margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; }
+  .modal-header h3 { margin: 4px 0 0; font-family: 'Bungee', sans-serif; font-size: 24px; }
+  .modal-close {
+    background: var(--ink); color: var(--cream); border: none; border-radius: 6px;
+    width: 32px; height: 32px; font-size: 16px; cursor: pointer; flex-shrink: 0;
+  }
+  .modal-body { padding: 24px; }
+  .stat-row { margin-bottom: 10px; }
+  .stat-label { display: flex; justify-content: space-between; font-size: 12px; font-family: 'IBM Plex Mono', monospace; font-weight: 600; margin-bottom: 4px; text-transform: uppercase; }
+  .stat-bar-bg { height: 10px; background: #eee6d6; border: 2px solid var(--ink); border-radius: 5px; }
+  .stat-bar-fill { height: 100%; background: var(--crimson); border-radius: 3px; }
+
+  /* ---------- chart ---------- */
+  .chart-row {
+    display: grid; grid-template-columns: 48px 1fr 90px 70px; align-items: center; gap: 12px;
+    padding: 14px 16px; background: var(--paper); border: 2.5px solid var(--ink); border-radius: 8px; margin-bottom: 10px;
+  }
+  .chart-row.admin-row-mode { grid-template-columns: 40px 1fr 90px 60px 96px; }
+  .chart-rank { font-family: 'Bungee', sans-serif; font-size: 22px; }
+  .chart-rank.top3 { color: var(--crimson); }
+  .chart-name { margin: 0; font-weight: 700; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .chart-track { margin: 0; font-size: 12.5px; color: var(--muted2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .chart-move { font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 12px; text-align: center; }
+  .chart-weeks { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--muted2); text-align: right; }
+  .chart-admin-controls { display: flex; gap: 4px; justify-content: flex-end; }
+  .chart-icon-btn {
+    width: 26px; height: 26px; border: 2px solid var(--ink); border-radius: 5px; background: var(--cream);
+    cursor: pointer; font-size: 11px; line-height: 1; display: flex; align-items: center; justify-content: center;
+  }
+  .chart-icon-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .chart-icon-btn.danger { background: var(--crimson); color: var(--cream); border-color: var(--ink); }
+  .add-entry-btn {
+    font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 12.5px; padding: 9px 14px;
+    background: var(--ink); color: var(--cream); border: none; border-radius: 6px; cursor: pointer;
+  }
+
+  /* ---------- news ---------- */
+  .news-card { background: var(--paper); border: 3px solid var(--ink); border-radius: 10px; box-shadow: 4px 4px 0 var(--ink); overflow: hidden; display: flex; flex-direction: column; position: relative; }
+  .news-card img.news-photo { width: 100%; height: 130px; object-fit: cover; border-bottom: 3px solid var(--ink); display: block; }
+  .news-card.big img.news-photo { height: 200px; }
+  .news-card .swatch-block { height: 90px; border-bottom: 3px solid var(--ink); }
+  .news-card.big .swatch-block { height: 140px; }
+  .news-card .news-body { padding: 16px; }
+  .news-card .news-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .news-card .news-date { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted2); }
+  .news-card h3 { margin: 0 0 8px; font-size: 16px; font-weight: 700; line-height: 1.3; }
+  .news-card.big h3 { font-size: 20px; }
+  .news-card p.teaser { margin: 0; font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+  .news-delete {
+    position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; border-radius: 6px;
+    border: 2px solid var(--ink); background: var(--cream); color: var(--ink); cursor: pointer;
+    font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1;
+  }
+  .empty-box {
+    border: 3px dashed var(--ink); border-radius: 10px; padding: 32px; text-align: center; color: var(--muted); background: var(--paper);
+  }
+  .empty-box p.title { margin: 0 0 6px; font-weight: 700; color: var(--ink); font-size: 16px; }
+  .empty-box p.body { margin: 0; font-size: 14px; }
+
+  /* ---------- admin gate + form ---------- */
+  .gate-btn {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; font-weight: 600; padding: 6px 12px;
+    border: 2px solid var(--ink); border-radius: 6px; cursor: pointer;
+  }
+  .gate-btn.unlock { background: transparent; color: var(--muted2); }
+  .gate-btn.locked-state { background: var(--cream); }
+  .gate-input { font-family: 'Space Grotesk', sans-serif; font-size: 13px; padding: 6px 10px; border: 2px solid var(--ink); border-radius: 6px; }
+  .gate-input.wrong { border-color: var(--crimson); }
+  .gate-error { font-size: 12px; color: var(--crimson); }
+
+  form.article-form {
+    background: var(--paper); border: 3px solid var(--ink); border-radius: 12px;
+    box-shadow: 5px 5px 0 var(--ink); padding: 22px; margin-bottom: 40px;
+  }
+  .article-form .form-title { margin: 0 0 16px; font-family: 'Bungee', sans-serif; font-size: 18px; }
+  .form-field { margin-bottom: 14px; }
+  .form-field label { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; font-weight: 600; letter-spacing: 0.04em; margin-bottom: 6px; }
+  .form-field input, .form-field select, .form-field textarea {
+    width: 100%; font-size: 14px; padding: 10px 12px; border: 2.5px solid var(--ink); border-radius: 6px; background: var(--cream); color: var(--ink);
+  }
+  .form-field textarea { min-height: 90px; resize: vertical; }
+  .form-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+  .form-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+  @media (max-width: 560px) { .form-row3, .form-row2 { grid-template-columns: 1fr; } }
+  .photo-preview { margin-top: 10px; display: flex; align-items: center; gap: 10px; }
+  .photo-preview img { width: 90px; height: 60px; object-fit: cover; border: 2px solid var(--ink); border-radius: 6px; }
+  .remove-photo-btn {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; font-weight: 600; background: none;
+    border: 2px solid var(--ink); border-radius: 6px; padding: 6px 10px; cursor: pointer;
+  }
+  .publish-btn {
+    font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 13px; padding: 12px 20px;
+    background: var(--crimson); color: var(--cream); border: 2.5px solid var(--ink); border-radius: 8px; cursor: pointer;
+  }
+  .publish-btn:disabled { cursor: not-allowed; opacity: 0.6; }
+  .form-error { color: var(--crimson); font-size: 13px; margin-top: -24px; margin-bottom: 24px; }
+  .muted-note { font-family: 'Space Grotesk', sans-serif; color: var(--muted2); }
+
+  /* ---------- about ---------- */
+  .about-box { max-width: 680px; }
+  .about-box p { font-size: 15.5px; line-height: 1.7; color: #3c3833; }
+  .masthead {
+    margin-top: 28px; padding: 20px; background: var(--paper); border: 3px solid var(--ink);
+    border-radius: 10px; box-shadow: 4px 4px 0 var(--ink);
+  }
+  .masthead p.kicker { margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; font-weight: 600; letter-spacing: 0.04em; }
+  .masthead p { margin: 4px 0 0; }
+
+  /* ---------- footer ---------- */
+  footer.site-footer { background: var(--ink); color: var(--cream); }
+  .footer-inner {
+    max-width: 1100px; margin: 0 auto; padding: 28px 20px; display: flex;
+    justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-size: 13px;
+  }
+  .footer-inner .fine-print { color: #9a958c; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo small" id="logo-home-link"><span class="L">L</span><span class="TV">TV</span></div>
+    <nav class="main-nav" id="main-nav"></nav>
+  </div>
+  <div class="pattern-strip"></div>
+  <div class="marquee-wrap"><div class="marquee-track" id="marquee-track"></div></div>
+  <div class="admin-bar" id="admin-bar"></div>
+</header>
+
+<main id="main-content"></main>
+
+<footer class="site-footer">
+  <div class="pattern-strip"></div>
+  <div class="footer-inner">
+    <span>© LTV — LARP Music Television. All foam, all sword, all the time.</span>
+    <span class="fine-print">Not affiliated with any real network. Or kingdom.</span>
+  </div>
+</footer>
+
+<div id="modal-root"></div>
+
+<script>
+/* =========================================================
+   STATIC DATA (artists don't change here — ask if you want
+   those editable too)
+   ========================================================= */
+const ARTISTS = [
+  { name: "Michael Larpson", persona: "King of Larp-Pop", genre: "Larp-Pop", faction: "Independent", color: "marigold",
+    bio: "Moonwalks across active battlefields, cape billowing, foam sword sheathed for choreography purposes only. His single 'Larp It' is the unofficial anthem of every tourney intermission.",
+    stats: { charisma: 98, hype: 96, damage: 40 } },
+  { name: "Larpvana", persona: "Flannel-Armored Grunge Trio", genre: "Larp-Grunge", faction: "The Basement Circuit", color: "cyan",
+    bio: "Fronted by Kurt Larpain, who plays through a cardboard amp and refuses all crowd interaction. 'Smells Like Larp Spirit' has been chanted at every encampment since spring.",
+    stats: { charisma: 72, hype: 94, damage: 55 } },
+  { name: "Lrince", persona: "Purple Larp Royalty", genre: "Larp-Funk", faction: "Court of Purple", color: "hotpink",
+    bio: "Wears a purple cape three sizes too dramatic and solos on a tiny guitar mid-duel. 'Purple Larp' has reportedly ended two feuds and started one wedding.",
+    stats: { charisma: 95, hype: 89, damage: 30 } },
+  { name: "Larpyoncé", persona: "Queen of the Realm", genre: "Larp-R&B", faction: "House Formation", color: "crimson",
+    bio: "Performs 'Crazy in Larp' with an eight-person backup formation drilled to military precision. Judges have run out of ways to say 'flawless.'",
+    stats: { charisma: 99, hype: 97, damage: 20 } },
+  { name: "Larpinem", persona: "Rapid-Fire Bard", genre: "Larp-Rap", faction: "Independent", color: "sky",
+    bio: "Freestyle battle-raps opponents mid-combat without ever breaking rhythm. 'Lose Yourlarp' has become the walk-out track for half the arena.",
+    stats: { charisma: 85, hype: 93, damage: 78 } },
+  { name: "Larpney Spears", persona: "Pop Princess of the Field", genre: "Larp-Pop", faction: "Independent", color: "hotpink",
+    bio: "Full choreographed battle routines set to 'Oops!... I Larped Again.' Her snake-prop incident is now a permanently banned stage move.",
+    stats: { charisma: 92, hype: 95, damage: 25 } },
+  { name: "The Larpeatles", persona: "Four-Piece Fellowship", genre: "Larp-Rock", faction: "The Open Road", color: "marigold",
+    bio: "Matching tunics, four-part harmony, and a habit of finishing 'Let It Larp' mid-siege regardless of how the battle is going.",
+    stats: { charisma: 88, hype: 82, damage: 35 } },
+  { name: "Larp Floyd", persona: "Psychedelic Warlord", genre: "Larp-Prog", faction: "Independent", color: "sky",
+    bio: "Forty-minute foam-sword solos over a fog machine budget that dwarfs the actual prize purse. 'Another Brick in the Larp' runs eleven minutes live.",
+    stats: { charisma: 68, hype: 79, damage: 90 } },
+  { name: "Larpke", persona: "Soft Boy Warrior", genre: "Larp-Hip Hop", faction: "Independent", color: "cyan",
+    bio: "Writes emotionally vulnerable diss tracks after every duel he loses. 'Larpstarted From the Bottom' currently has three sequels.",
+    stats: { charisma: 90, hype: 86, damage: 45 } },
+  { name: "Larp Sinatra", persona: "Old Guard Crooner", genre: "Larp-Swing", faction: "The Traveling Orchestra", color: "crimson",
+    bio: "Refuses to perform without a full backing kazoo orchestra. 'My Larp' is technically a slow song but has never once ended a fight peacefully.",
+    stats: { charisma: 94, hype: 71, damage: 15 } },
+];
+
+const DEFAULT_CHART = [
+  { name: "Larpvana", track: "Smells Like Larp Spirit", weeks: 9, prevRank: 1 },
+  { name: "Michael Larpson", track: "Larp It", weeks: 12, prevRank: 3 },
+  { name: "Lrince", track: "Purple Larp", weeks: 10, prevRank: 2 },
+  { name: "Larpyoncé", track: "Crazy in Larp", weeks: 6, prevRank: 5 },
+  { name: "Larpinem", track: "Lose Yourlarp", weeks: 8, prevRank: 4 },
+  { name: "Larpney Spears", track: "Oops!... I Larped Again", weeks: 1, prevRank: null },
+  { name: "The Larpeatles", track: "Let It Larp", weeks: 15, prevRank: 6 },
+  { name: "Larpke", track: "Larpstarted From the Bottom", weeks: 4, prevRank: 10 },
+  { name: "Larp Floyd", track: "Another Brick in the Larp", weeks: 11, prevRank: 7 },
+  { name: "Larp Sinatra", track: "My Larp", weeks: 1, prevRank: null },
+];
+
+const NEWS_TAGS = ["TOURNEY REPORT","FEUD ALERT","CHART WATCH","MERCH DROP","ENCAMPMENT DIARIES","RULES COMMITTEE","AWARDS","BREAKING"];
+const NEWS_COLORS = ["marigold","crimson","sky","cyan","hotpink"];
+
+// News and chart data live in this browser's localStorage. That means edits
+// persist for you on this device/browser, but are NOT automatically synced
+// to other visitors' browsers — a real shared, always-in-sync public feed
+// needs a server/database behind it.
+const NEWS_STORAGE_KEY = "ltv-news-articles";
+const CHART_STORAGE_KEY = "ltv-chart-rows";
+
+// Change this before publishing the site anywhere. Anyone who knows it — or
+// who reads this source file — can edit news/chart. This is a casual gate
+// to keep out casual visitors, not real security.
+const ADMIN_PASSCODE = "backstage";
+const ADMIN_SESSION_KEY = "ltv-admin-unlocked"; // sessionStorage, clears when tab closes
+
+const TABS = ["HOME", "NEWS", "ARTISTS", "CHARTS", "ABOUT"];
+
+/* =========================================================
+   STATE
+   ========================================================= */
+let state = {
+  tab: "HOME",
+  articles: [],
+  chart: [],
+  isAdmin: sessionStorage.getItem(ADMIN_SESSION_KEY) === "1",
+  openArtistName: null,
+  editingChartId: null, // null | "NEW" | an id
+  gateOpen: false,
+  gateWrong: false,
+  formError: null,
+  chartError: null,
+  imageBusy: false,
+  imageError: null,
+  draftImage: null,
+};
+
+function uid() {
+  return Date.now() + "-" + Math.random().toString(36).slice(2, 8);
+}
+
+function loadArticles() {
+  try {
+    const raw = localStorage.getItem(NEWS_STORAGE_KEY);
+    state.articles = raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    state.articles = [];
+  }
+}
+
+function saveArticles() {
+  try {
+    localStorage.setItem(NEWS_STORAGE_KEY, JSON.stringify(state.articles));
+    state.formError = null;
+  } catch (e) {
+    state.formError = "Couldn't save. Your browser storage may be full.";
+  }
+}
+
+function addArticle(article) {
+  const withId = Object.assign({}, article, { id: uid() });
+  state.articles = [withId].concat(state.articles);
+  saveArticles();
+}
+
+function deleteArticle(id) {
+  state.articles = state.articles.filter(a => a.id !== id);
+  saveArticles();
+}
+
+function loadChart() {
+  try {
+    const raw = localStorage.getItem(CHART_STORAGE_KEY);
+    if (raw) {
+      state.chart = JSON.parse(raw);
+      return;
+    }
+  } catch (e) { /* fall through to seed */ }
+  state.chart = DEFAULT_CHART.map(row => Object.assign({ id: uid() }, row));
+  saveChart();
+}
+
+function saveChart() {
+  try {
+    localStorage.setItem(CHART_STORAGE_KEY, JSON.stringify(state.chart));
+    state.chartError = null;
+  } catch (e) {
+    state.chartError = "Couldn't save. Your browser storage may be full.";
+  }
+}
+
+function addChartRow(row) {
+  state.chart = state.chart.concat([Object.assign({ id: uid() }, row)]);
+  saveChart();
+}
+
+function updateChartRow(id, fields) {
+  state.chart = state.chart.map(r => r.id === id ? Object.assign({}, r, fields) : r);
+  saveChart();
+}
+
+function deleteChartRow(id) {
+  state.chart = state.chart.filter(r => r.id !== id);
+  saveChart();
+}
+
+function moveChartRow(id, delta) {
+  const idx = state.chart.findIndex(r => r.id === id);
+  const newIdx = idx + delta;
+  if (idx < 0 || newIdx < 0 || newIdx >= state.chart.length) return;
+  const copy = state.chart.slice();
+  const tmp = copy[idx];
+  copy[idx] = copy[newIdx];
+  copy[newIdx] = tmp;
+  state.chart = copy;
+  saveChart();
+}
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+function esc(str) {
+  const d = document.createElement("div");
+  d.textContent = str == null ? "" : String(str);
+  return d.innerHTML;
+}
+
+function todayLabel() {
+  return new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" }).toUpperCase();
+}
+
+function resizeImageFile(file, maxWidth, quality) {
+  maxWidth = maxWidth || 900;
+  quality = quality || 0.82;
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Could not read file"));
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onerror = () => reject(new Error("Could not read image"));
+      img.onload = () => {
+        const scale = Math.min(1, maxWidth / img.width);
+        const w = Math.max(1, Math.round(img.width * scale));
+        const h = Math.max(1, Math.round(img.height * scale));
+        const canvas = document.createElement("canvas");
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL("image/jpeg", quality));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function badgeHtml(colorKey, label) {
+  return `<span class="badge" style="background:var(--${esc(colorKey || 'marigold')})">${esc(label)}</span>`;
+}
+
+/* =========================================================
+   RENDER: shared bits
+   ========================================================= */
+function renderNav() {
+  const nav = document.getElementById("main-nav");
+  nav.innerHTML = TABS.map(t =>
+    `<button class="nav-btn${t === state.tab ? " active" : ""}" data-tab="${t}">${t}</button>`
+  ).join("");
+  nav.querySelectorAll(".nav-btn").forEach(btn => {
+    btn.addEventListener("click", () => goto(btn.dataset.tab));
+  });
+}
+
+function renderMarquee() {
+  const track = document.getElementById("marquee-track");
+  const items = state.articles.length
+    ? state.articles.slice(0, 6).map(a => a.title.toUpperCase())
+    : ["ADD YOUR FIRST STORY ON THE NEWS PAGE TO SEE IT HERE"];
+  const text = items.map(esc).join("   ★   ") + "   ★   ";
+  track.innerHTML = text + text;
+}
+
+function renderAdminBar() {
+  const bar = document.getElementById("admin-bar");
+  if (state.isAdmin) {
+    bar.innerHTML = `<button class="gate-btn locked-state" id="lock-btn">EDITING ENABLED — LOG OUT</button>`;
+    document.getElementById("lock-btn").addEventListener("click", () => {
+      state.isAdmin = false;
+      sessionStorage.removeItem(ADMIN_SESSION_KEY);
+      render();
+    });
+  } else if (state.gateOpen) {
+    bar.innerHTML = `
+      <form id="gate-form" style="display:flex; gap:8px; align-items:center;">
+        <input type="password" id="gate-input" class="gate-input${state.gateWrong ? " wrong" : ""}" placeholder="Editor passcode" autocomplete="off" />
+        <button type="submit" class="gate-btn locked-state" style="background:var(--ink); color:var(--cream);">UNLOCK</button>
+        ${state.gateWrong ? `<span class="gate-error">Wrong passcode</span>` : ""}
+      </form>
+    `;
+    const input = document.getElementById("gate-input");
+    if (input) input.focus();
+    document.getElementById("gate-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const val = document.getElementById("gate-input").value;
+      if (val === ADMIN_PASSCODE) {
+        state.isAdmin = true;
+        state.gateOpen = false;
+        state.gateWrong = false;
+        sessionStorage.setItem(ADMIN_SESSION_KEY, "1");
+      } else {
+        state.gateWrong = true;
+      }
+      render();
+    });
+  } else {
+    bar.innerHTML = `<button class="gate-btn unlock" id="open-gate-btn">EDITOR LOGIN</button>`;
+    document.getElementById("open-gate-btn").addEventListener("click", () => { state.gateOpen = true; render(); });
+  }
+}
+
+function goto(tab) {
+  state.tab = tab;
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* =========================================================
+   RENDER: pages
+   ========================================================= */
+function renderHome() {
+  const featured = ARTISTS[0];
+  const newsHtml = state.articles.length
+    ? `<div class="grid">${state.articles.slice(0, 3).map(n => newsCardHtml(n, false, false)).join("")}</div>`
+    : `<div class="empty-box"><p class="title">No stories yet</p><p class="body">Head to the News page and write the first LTV headline.</p></div>`;
+
+  return `
+    <section class="hero">
+      <div class="hero-content">
+        <div class="logo large"><span class="L">L</span><span class="TV">TV</span></div>
+        <p class="tagline">The network that covers the artists who never stop performing — even when nobody's filming, because for them, the bit is the point.</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" data-goto="CHARTS">SEE TOP 10 CHART →</button>
+          <button class="btn btn-outline" data-goto="NEWS">READ LATEST NEWS</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-heading">
+      <div class="heading-text">
+        <h2>Featured Artist</h2>
+        <p>This week's spotlight, chosen by the LTV editorial round table (three interns and a bard).</p>
+        <div class="underline"></div>
+      </div>
+    </div>
+    <div class="featured">
+      <div class="swatch-lg" style="background:var(--${featured.color})">${esc(featured.persona)}</div>
+      <div>
+        ${badgeHtml(featured.color, featured.genre)}
+        <h3>${esc(featured.name)}</h3>
+        <p class="bio">${esc(featured.bio)}</p>
+        <button class="publish-btn" style="background:var(--ink)" data-open-artist="${esc(featured.name)}">VIEW FULL PROFILE</button>
+      </div>
+    </div>
+
+    <div class="section-heading">
+      <div class="heading-text">
+        <h2>Top Stories</h2>
+        <p>The feuds, the drops, the drama — all of it happened in a field.</p>
+        <div class="underline"></div>
+      </div>
+    </div>
+    ${newsHtml}
+
+    <div class="section-heading" style="margin-top:56px;">
+      <div class="heading-text">
+        <h2>This Week's Top 5</h2>
+        <p>Updated weekly, based on chants, subwoofer decibels, and general vibes.</p>
+        <div class="underline"></div>
+      </div>
+    </div>
+    ${state.chart.slice(0, 5).map((row, i) => chartRowHtml(row, i, state.chart, false)).join("")}
+  `;
+}
+
+function newsCardHtml(item, big, showDelete) {
+  const media = item.image
+    ? `<img class="news-photo" src="${item.image}" alt="" />`
+    : `<div class="swatch-block" style="background:var(--${esc(item.color || 'marigold')})"></div>`;
+  const del = showDelete
+    ? `<button class="news-delete" data-delete-article="${item.id}" title="Delete article">✕</button>`
+    : "";
+  return `
+    <article class="news-card${big ? " big" : ""}">
+      ${media}
+      ${del}
+      <div class="news-body">
+        <div class="news-top">
+          ${badgeHtml(item.color, item.tag)}
+          <span class="news-date">${esc(item.date)}</span>
+        </div>
+        <h3>${esc(item.title)}</h3>
+        <p class="teaser">${esc(item.teaser)}</p>
+      </div>
+    </article>
+  `;
+}
+
+function movementFor(row, rank) {
+  if (row.prevRank === null || row.prevRank === undefined || row.prevRank === "") {
+    return { symbol: "NEW", color: "var(--crimson)" };
+  }
+  const prev = Number(row.prevRank);
+  if (prev > rank) return { symbol: `▲ ${prev - rank}`, color: "#3f8f3f" };
+  if (prev < rank) return { symbol: `▼ ${rank - prev}`, color: "var(--crimson)" };
+  return { symbol: "—", color: "var(--muted2)" };
+}
+
+function chartRowHtml(row, index, fullList, adminMode) {
+  const rank = index + 1;
+  const move = movementFor(row, rank);
+  const adminControls = adminMode ? `
+    <div class="chart-admin-controls">
+      <button class="chart-icon-btn" data-chart-move="${row.id}" data-dir="-1" ${index === 0 ? "disabled" : ""} title="Move up">▲</button>
+      <button class="chart-icon-btn" data-chart-move="${row.id}" data-dir="1" ${index === fullList.length - 1 ? "disabled" : ""} title="Move down">▼</button>
+      <button class="chart-icon-btn" data-chart-edit="${row.id}" title="Edit">✎</button>
+      <button class="chart-icon-btn danger" data-chart-delete="${row.id}" title="Delete">✕</button>
+    </div>
+  ` : "";
+  return `
+    <div class="chart-row${adminMode ? " admin-row-mode" : ""}">
+      <span class="chart-rank${rank <= 3 ? " top3" : ""}">${rank}</span>
+      <div style="min-width:0;">
+        <p class="chart-name">${esc(row.name)}</p>
+        <p class="chart-track">${esc(row.track)}</p>
+      </div>
+      <span class="chart-move" style="color:${move.color}">${move.symbol}</span>
+      ${adminMode ? adminControls : `<span class="chart-weeks">${row.weeks} wk${row.weeks !== 1 ? "s" : ""}</span>`}
+    </div>
+  `;
+}
+
+function renderNewsPage() {
+  const form = state.isAdmin ? articleFormHtml() : "";
+  const errorHtml = state.formError ? `<p class="form-error">${esc(state.formError)}</p>` : "";
+
+  let listHtml;
+  if (state.articles.length) {
+    listHtml = `<div class="grid">${state.articles.map((n, i) => newsCardHtml(n, i === 0, state.isAdmin)).join("")}</div>`;
+  } else {
+    listHtml = `<p class="muted-note">${state.isAdmin ? "Nothing published yet — use the form above to write the first story." : "No stories yet. Check back soon."}</p>`;
+  }
+
+  return `
+    <div class="section-heading">
+      <div class="heading-text">
+        <h2>LTV News</h2>
+        <p>Feuds, drops, tourney recaps, and encampment gossip — wall to wall.</p>
+        <div class="underline"></div>
+      </div>
+    </div>
+    ${form}
+    ${errorHtml}
+    ${listHtml}
+  `;
+}
+
+function articleFormHtml() {
+  const imgPreview = state.draftImage
+    ? `<div class="photo-preview">
+         <img src="${state.draftImage}" alt="" />
+         <button type="button" class="remove-photo-btn" id="remove-photo-btn">REMOVE PHOTO</button>
+       </div>`
+    : "";
+  return `
+    <form class="article-form" id="article-form">
+      <p class="form-title">WRITE A STORY</p>
+      <div class="form-field">
+        <label>Headline</label>
+        <input type="text" id="f-title" maxlength="140" placeholder="Larpvana Tops the Chart Again" />
+      </div>
+      <div class="form-row3">
+        <div class="form-field">
+          <label>Category</label>
+          <select id="f-tag">${NEWS_TAGS.map(t => `<option value="${t}">${t}</option>`).join("")}</select>
+        </div>
+        <div class="form-field">
+          <label>Date</label>
+          <input type="text" id="f-date" value="${esc(todayLabel())}" />
+        </div>
+        <div class="form-field">
+          <label>Badge color</label>
+          <select id="f-color">${NEWS_COLORS.map(c => `<option value="${c}">${c}</option>`).join("")}</select>
+        </div>
+      </div>
+      <div class="form-field">
+        <label>Story</label>
+        <textarea id="f-teaser" maxlength="600" placeholder="What happened, in your own words..."></textarea>
+      </div>
+      <div class="form-field">
+        <label>Photo (optional)</label>
+        <input type="file" id="f-image" accept="image/*" />
+        ${state.imageBusy ? `<p class="muted-note" style="font-size:12px; margin:6px 0 0;">Processing image…</p>` : ""}
+        ${state.imageError ? `<p class="form-error" style="margin:6px 0 0;">${esc(state.imageError)}</p>` : ""}
+        ${imgPreview}
+      </div>
+      <button type="submit" class="publish-btn" ${state.imageBusy ? "disabled" : ""}>PUBLISH STORY</button>
+    </form>
+  `;
+}
+
+function renderArtistsPage() {
+  return `
+    <div class="section-heading">
+      <div class="heading-text">
+        <h2>The Roster</h2>
+        <p>Ten performers. Zero real swords. All the drama that implies.</p>
+        <div class="underline"></div>
+      </div>
+    </div>
+    <div class="grid">
+      ${ARTISTS.map(a => `
+        <div class="card" data-open-artist="${esc(a.name)}">
+          <div class="swatch" style="background:var(--${a.color})">${esc(a.persona)}</div>
+          <h3>${esc(a.name)}</h3>
+          <p class="faction">${esc(a.faction)}</p>
+          ${badgeHtml(a.color, a.genre)}
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderChartsPage() {
+  const addBtn = state.isAdmin ? `<button class="add-entry-btn" id="chart-add-btn">+ ADD ENTRY</button>` : "";
+  const errorHtml = state.chartError ? `<p class="form-error" style="margin-top:0;">${esc(state.chartError)}</p>` : "";
+  const rows = state.chart.length
+    ? state.chart.map((row, i) => chartRowHtml(row, i, state.chart, state.isAdmin)).join("")
+    : `<p class="muted-note">No chart entries yet.</p>`;
+  return `
+    <div class="section-heading">
+      <div class="heading-text">
+        <h2>LTV Top 10</h2>
+        <p>Ranked by chant volume, subwoofer decibels, and the unimpeachable judgment of the Rules Committee.</p>
+        <div class="underline"></div>
+      </div>
+      ${addBtn}
+    </div>
+    ${errorHtml}
+    ${rows}
+  `;
+}
+
+function renderAboutPage() {
+  return `
+    <div class="about-box">
+      <div class="section-heading"><div class="heading-text"><h2>About LTV</h2><div class="underline"></div></div></div>
+      <p>LTV launched with one mission: cover the artists who treat a Renaissance faire parking lot like Madison Square Garden. While other networks chase artists with real record deals, we chase the ones with real foam swords.</p>
+      <p>Every chart position is earned in the field — chanted, moshed, and occasionally settled by single combat. Every news story is reported by someone who was, at some point, also in costume.</p>
+      <p>We are not affiliated with any actual kingdom, court, legion, or freehold. All factions are fictional. All rivalries are extremely real to the people involved.</p>
+      <div class="masthead">
+        <p class="kicker">LTV MASTHEAD</p>
+        <p>Editor-in-Chief: a bard who insists on a byline in character.</p>
+        <p>Chart Committee: three interns, one lute.</p>
+        <p>Fact-checking: rare, but attempted.</p>
+      </div>
+    </div>
+  `;
+}
+
+function artistModalHtml(a) {
+  const statLabel = k => k === "hype" ? "crowd hype" : k === "damage" ? "foam damage dealt" : k;
+  const stats = Object.keys(a.stats).map(k => `
+    <div class="stat-row">
+      <div class="stat-label"><span>${statLabel(k)}</span><span>${a.stats[k]}</span></div>
+      <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${a.stats[k]}%"></div></div>
+    </div>
+  `).join("");
+  return `
+    <div class="modal-backdrop" id="modal-backdrop">
+      <div class="modal-box" id="modal-box">
+        <div class="modal-header" style="background:var(--${a.color})">
+          <div>
+            <p class="persona">${esc(a.persona.toUpperCase())}</p>
+            <h3>${esc(a.name)}</h3>
+          </div>
+          <button class="modal-close" id="modal-close-btn" aria-label="Close">✕</button>
+        </div>
+        <div class="modal-body">
+          <div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
+            ${badgeHtml(a.color, a.genre)}
+            <span class="badge" style="background:var(--ink); color:var(--cream);">${esc(a.faction)}</span>
+          </div>
+          <p style="font-size:15px; line-height:1.6; color:#3c3833; margin:0 0 18px;">${esc(a.bio)}</p>
+          ${stats}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function chartEditModalHtml(row, isNew) {
+  return `
+    <div class="modal-backdrop" id="modal-backdrop">
+      <div class="modal-box" id="modal-box" style="max-width:420px;">
+        <div class="modal-header" style="background:var(--marigold)">
+          <div><h3>${isNew ? "Add Chart Entry" : "Edit Chart Entry"}</h3></div>
+          <button class="modal-close" id="modal-close-btn" aria-label="Close">✕</button>
+        </div>
+        <div class="modal-body">
+          <form id="chart-edit-form">
+            <div class="form-field">
+              <label>Artist</label>
+              <input id="c-name" value="${esc(row.name)}" placeholder="Larpvana" />
+            </div>
+            <div class="form-field">
+              <label>Track</label>
+              <input id="c-track" value="${esc(row.track)}" placeholder="Smells Like Larp Spirit" />
+            </div>
+            <div class="form-row2">
+              <div class="form-field">
+                <label>Weeks on chart</label>
+                <input type="number" min="1" id="c-weeks" value="${row.weeks == null ? 1 : row.weeks}" />
+              </div>
+              <div class="form-field">
+                <label>Previous rank (blank = new)</label>
+                <input type="number" min="1" id="c-prev" value="${row.prevRank == null ? '' : row.prevRank}" />
+              </div>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:6px;">
+              <button type="submit" class="publish-btn">SAVE</button>
+              ${!isNew ? `<button type="button" class="remove-photo-btn" id="chart-delete-btn">DELETE</button>` : ""}
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* =========================================================
+   MAIN RENDER + EVENT BINDING
+   ========================================================= */
+function render() {
+  renderNav();
+  renderMarquee();
+  renderAdminBar();
+
+  const main = document.getElementById("main-content");
+  if (state.tab === "HOME") main.innerHTML = renderHome();
+  else if (state.tab === "NEWS") main.innerHTML = renderNewsPage();
+  else if (state.tab === "ARTISTS") main.innerHTML = renderArtistsPage();
+  else if (state.tab === "CHARTS") main.innerHTML = renderChartsPage();
+  else if (state.tab === "ABOUT") main.innerHTML = renderAboutPage();
+
+  bindMainEvents();
+  renderModal();
+}
+
+function renderModal() {
+  const modalRoot = document.getElementById("modal-root");
+  if (state.openArtistName) {
+    const a = ARTISTS.find(x => x.name === state.openArtistName);
+    modalRoot.innerHTML = a ? artistModalHtml(a) : "";
+    bindGenericModalClose(() => { state.openArtistName = null; render(); });
+  } else if (state.editingChartId) {
+    const isNew = state.editingChartId === "NEW";
+    const row = isNew ? { name: "", track: "", weeks: 1, prevRank: null } : state.chart.find(r => r.id === state.editingChartId);
+    if (!row) { modalRoot.innerHTML = ""; return; }
+    modalRoot.innerHTML = chartEditModalHtml(row, isNew);
+    bindGenericModalClose(() => { state.editingChartId = null; render(); });
+    document.getElementById("chart-edit-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("c-name").value.trim();
+      const track = document.getElementById("c-track").value.trim();
+      const weeks = parseInt(document.getElementById("c-weeks").value, 10) || 1;
+      const prevRaw = document.getElementById("c-prev").value;
+      const prevRank = prevRaw === "" ? null : parseInt(prevRaw, 10);
+      if (!name || !track) return;
+      if (isNew) {
+        addChartRow({ name, track, weeks, prevRank });
+      } else {
+        updateChartRow(state.editingChartId, { name, track, weeks, prevRank });
+      }
+      state.editingChartId = null;
+      render();
+    });
+    const deleteBtn = document.getElementById("chart-delete-btn");
+    if (deleteBtn) deleteBtn.addEventListener("click", () => {
+      deleteChartRow(state.editingChartId);
+      state.editingChartId = null;
+      render();
+    });
+  } else {
+    modalRoot.innerHTML = "";
+  }
+}
+
+function bindGenericModalClose(onClose) {
+  const backdrop = document.getElementById("modal-backdrop");
+  const box = document.getElementById("modal-box");
+  const closeBtn = document.getElementById("modal-close-btn");
+  if (backdrop) backdrop.addEventListener("click", onClose);
+  if (box) box.addEventListener("click", (e) => e.stopPropagation());
+  if (closeBtn) closeBtn.addEventListener("click", onClose);
+}
+
+function bindMainEvents() {
+  document.querySelectorAll("[data-goto]").forEach(el => {
+    el.addEventListener("click", () => goto(el.dataset.goto));
+  });
+  document.querySelectorAll("[data-open-artist]").forEach(el => {
+    el.addEventListener("click", () => {
+      state.openArtistName = el.dataset.openArtist;
+      render();
+    });
+  });
+
+  if (state.tab === "NEWS") {
+    document.querySelectorAll("[data-delete-article]").forEach(el => {
+      el.addEventListener("click", () => {
+        deleteArticle(el.dataset.deleteArticle);
+        render();
+      });
+    });
+
+    const removePhotoBtn = document.getElementById("remove-photo-btn");
+    if (removePhotoBtn) removePhotoBtn.addEventListener("click", () => {
+      state.draftImage = null;
+      render();
+    });
+
+    const imageInput = document.getElementById("f-image");
+    if (imageInput) imageInput.addEventListener("change", async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      state.imageBusy = true;
+      state.imageError = null;
+      render();
+      try {
+        state.draftImage = await resizeImageFile(file);
+      } catch (err) {
+        state.imageError = "Couldn't load that image. Try a different file.";
+      } finally {
+        state.imageBusy = false;
+        render();
+      }
+    });
+
+    const articleForm = document.getElementById("article-form");
+    if (articleForm) articleForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const title = document.getElementById("f-title").value.trim();
+      const teaser = document.getElementById("f-teaser").value.trim();
+      if (!title || !teaser) return;
+      addArticle({
+        title,
+        teaser,
+        tag: document.getElementById("f-tag").value,
+        date: document.getElementById("f-date").value,
+        color: document.getElementById("f-color").value,
+        image: state.draftImage,
+      });
+      state.draftImage = null;
+      render();
+    });
+  }
+
+  if (state.tab === "CHARTS") {
+    const addBtn = document.getElementById("chart-add-btn");
+    if (addBtn) addBtn.addEventListener("click", () => {
+      state.editingChartId = "NEW";
+      render();
+    });
+    document.querySelectorAll("[data-chart-move]").forEach(el => {
+      el.addEventListener("click", () => {
+        moveChartRow(el.dataset.chartMove, parseInt(el.dataset.dir, 10));
+        render();
+      });
+    });
+    document.querySelectorAll("[data-chart-edit]").forEach(el => {
+      el.addEventListener("click", () => {
+        state.editingChartId = el.dataset.chartEdit;
+        render();
+      });
+    });
+    document.querySelectorAll("[data-chart-delete]").forEach(el => {
+      el.addEventListener("click", () => {
+        deleteChartRow(el.dataset.chartDelete);
+        render();
+      });
+    });
+  }
+}
+
+document.getElementById("logo-home-link").addEventListener("click", () => goto("HOME"));
+
+/* =========================================================
+   INIT
+   ========================================================= */
+loadArticles();
+loadChart();
+render();
+</script>
+</body>
+</html>
